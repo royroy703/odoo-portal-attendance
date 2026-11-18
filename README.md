@@ -1,12 +1,12 @@
 # Portal Attendance
 
-Módulo personalizado para Odoo 19 que [explica en una frase qué permite hacer].
+Módulo personalizado para Odoo 19 que permite tomar la asistencia de los trabajadores.
 
 ## Funciones
 
-- [Función principal]
-- [Otra función importante]
-- [Quiénes pueden utilizarlo]
+- Poder tomar Asistencia.
+- Tener un reporte de asistencia.
+- Pueden usarlo empresas de múltiples trabajadores con horarios. 
 
 ## Instalación
 
