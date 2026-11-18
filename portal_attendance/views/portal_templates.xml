@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Entrada en el home del portal (/my) -->
+    <template id="portal_my_home_attendance" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Registro de Asistencia</t>
+                <t t-set="url" t-value="'/my/attendance'"/>
+                <t t-set="no_header" t-value="True"/>
+                <t t-set="no_footer" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Vista principal Mobile-First -->
+    <template id="portal_my_attendance_view" name="Mi Asistencia - Cervecerías Cusco">
+        <t t-call="portal.portal_layout">
+            <style>
+            header, footer { display: none !important; }
+            #wrapwrap { padding-top: 0 !important; }
+
+                /* 1. Ocultar la casita negra residual de Odoo */
+                .o_portal_submenu, .breadcrumb, .o_portal_navbar {
+                    display: none !important;
+                }
+               /* Eliminar el padding del body que Odoo reserva para su menú */
+                html, body, #wrapwrap, main, #wrap {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+
+                /* 2. Forzar el fondo crema a pantalla completa rompiendo el contenedor de Odoo */
+                .o_attendance_portal_wrap {
+                    position: fixed !important; /* Ancla el fondo a la pantalla del navegador */
+                    top: 0 !important; /* Lo pega al techo absoluto, ignorando la franja blanca */
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important; /* Usa height en lugar de min-height */
+                    overflow-y: auto !important; /* Permite hacer scroll si el contenido es largo */
+                    z-index: 9999 !important; /* Lo pone por encima de cualquier residuo invisible de Odoo */
+                    box-sizing: border-box !important;
+                    padding: 30px 15px 45px !important;
+                    background: radial-gradient(circle at 50% 0%, #fffbf2 0%, #f7f3ea 100%);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                }
+                .craft-container {
+                    max-width: 500px;
+                    width: 100%; /* NUEVO: Se adapta a móviles */
+                    margin: 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    box-sizing: border-box; /* NUEVO */
+                }
+                .craft-card {
+                    background: #ffffff;
+                    border-radius: 24px;
+                    padding: 26px 20px;
+                    box-shadow: 0 10px 30px rgba(180, 115, 20, 0.08), 0 2px 6px rgba(0,0,0,0.03);
+                    border: 1px solid rgba(217, 140, 20, 0.18);
+                    text-align: center;
+                }
+                .brand-badge {
+                    display: inline-block;
+                    font-size: 10px;
+                    letter-spacing: 2px;
+                    font-weight: 800;
+                    color: #b56a12;
+                    background: #fdf3e2;
+                    padding: 4px 14px;
+                    border-radius: 20px;
+                    margin-bottom: 8px;
+                    text-transform: uppercase;
+                }
+                .employee-name-box {
+                    display: inline-block;
+                    max-width: 100%;
+                    box-sizing: border-box;
+                    padding: 10px 26px;
+                    margin: 0 auto 6px;
+                    background: linear-gradient(180deg, #fffaf2 0%, #fdf1de 100%);
+                    border: 1px solid rgba(217, 140, 20, 0.38);
+                    border-radius: 14px;
+                    box-shadow: 0 3px 10px rgba(180, 115, 20, 0.12);
+                }
+                .employee-title {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #241c14;
+                    margin: 0;
+                    line-height: 1.2;
+                    overflow-wrap: break-word;
+                }
+                .subtitle {
+                    font-size: 13px;
+                    color: #8c7e72;
+                    margin-bottom: 18px;
+                }
+                .craft-clock-box {
+                    background: linear-gradient(180deg, #1c1815 0%, #12100e 100%);
+                    border-radius: 18px;
+                    padding: 20px 14px;
+                    box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), 0 8px 20px rgba(25, 20, 15, 0.15);
+                    margin-bottom: 18px;
+                    border: 1px solid rgba(255, 185, 80, 0.2);
+                }
+                .digital-time {
+                    font-family: "Courier New", Courier, monospace;
+                    font-size: 38px;
+                    font-weight: 900;
+                    letter-spacing: 3px;
+                    color: #f6a93b;
+                    text-shadow: 0 0 16px rgba(246, 169, 59, 0.55);
+                }
+                .digital-date {
+                    font-size: 12px;
+                    color: #c9b49b;
+                    text-transform: capitalize;
+                    margin-top: 6px;
+                }
+                .status-indicator-wrap {
+                    margin-bottom: 20px;
+                }
+                .status-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    padding: 6px 16px;
+                    border-radius: 30px;
+                }
+                .status-badge.active-shift {
+                    background: #e8f8ee;
+                    color: #1a7f37;
+                    border: 1px solid #abf0be;
+                }
+                .status-badge.out-shift {
+                    background: #f1f2f4;
+                    color: #57606a;
+                    border: 1px solid #d0d7de;
+                }
+                .pulsing-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                }
+                .pulsing-dot.green {
+                    background: #2da44e;
+                    box-shadow: 0 0 0 0 rgba(45, 164, 78, 0.7);
+                    animation: pulse-green 1.8s infinite;
+                }
+                .pulsing-dot.gray {
+                    background: #8c959f;
+                }
+                @keyframes pulse-green {
+                    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(45, 164, 78, 0.7); }
+                    70% { transform: scale(1); box-shadow: 0 0 0 7px rgba(45, 164, 78, 0); }
+                    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(45, 164, 78, 0); }
+                }
+                .craft-cta-btn {
+                    width: 100%;
+                    min-height: 60px;
+                    border: none;
+                    border-radius: 16px;
+                    cursor: pointer;
+                    font-size: 15px;
+                    font-weight: 800;
+                    letter-spacing: 0.8px;
+                    color: #ffffff !important;
+                    transition: transform 0.15s ease, opacity 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-sizing: border-box; /* NUEVO */
+                    padding: 10px; /* NUEVO */
+                    white-space: normal; /* NUEVO: Permite que el texto se adapte */
+                    text-align: center; /* NUEVO */
+                }
+                .craft-cta-btn:active {
+                    transform: scale(0.98);
+                }
+                .craft-cta-btn.checkin {
+                    background: linear-gradient(135deg, #df8c18 0%, #b8690e 100%);
+                    box-shadow: 0 8px 24px rgba(205, 120, 16, 0.35);
+                }
+                .craft-cta-btn.checkout {
+                    background: linear-gradient(135deg, #d9383a 0%, #b31d20 100%);
+                    box-shadow: 0 8px 24px rgba(217, 56, 58, 0.35);
+                }
+                .btn-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .metrics-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 10px;
+                }
+                .metric-card {
+                    background: #ffffff;
+                    border-radius: 18px;
+                    padding: 14px 8px;
+                    text-align: center;
+                    border: 1px solid rgba(217, 140, 20, 0.15);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+                }
+                .metric-val {
+                    font-size: 20px;
+                    font-weight: 800;
+                    color: #b56a12;
+                    line-height: 1.1;
+                }
+                .metric-val small {
+                    font-size: 11px;
+                    font-weight: 600;
+                    margin-left: 2px;
+                    color: #7d6b5c;
+                }
+                .metric-lbl {
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #8c7e72;
+                    margin-top: 5px;
+                    text-transform: uppercase;
+                }
+                .history-card {
+                    background: #ffffff;
+                    border-radius: 22px;
+                    padding: 20px 16px;
+                    border: 1px solid rgba(217, 140, 20, 0.15);
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+                }
+                .history-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 14px;
+                }
+                .history-header h3 {
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #241c14;
+                    margin: 0;
+                }
+                .badge-count {
+                    font-size: 11px;
+                    background: #fdf3e2;
+                    color: #b56a12;
+                    font-weight: 700;
+                    padding: 3px 10px;
+                    border-radius: 12px;
+                }
+                .timeline-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .timeline-item {
+                    background: #faf8f5;
+                    border: 1px solid #f0e9df;
+                    border-radius: 14px;
+                    padding: 15px 24px !important; /* El 24px da mucho más aire a los costados */
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    box-sizing: border-box !important;
+                    width: 100% !important;
+                }
+                .timeline-item.item-active {
+                    border-left: 4px solid #2da44e;
+                    background: #f7fdf9;
+                }
+                .timeline-date-col {
+                    display: flex;
+                    flex-direction: column;
+                }
+                .date-str {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #2c2520;
+                }
+                .worked-hrs {
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: #b56a12;
+                }
+                .timeline-times-col {
+                    display: flex;
+                    gap: 16px;
+                }
+                .time-block {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                }
+                .time-block .tag {
+                    font-size: 9px;
+                    font-weight: 700;
+                    color: #9c8e82;
+                    letter-spacing: 0.5px;
+                }
+                .time-block .hour {
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #332b25;
+                }
+                .time-block .hour.active-text {
+                    color: #2da44e;
+                    font-style: italic;
+                }
+                            
+                @media (max-width: 380px) {
+                .craft-cta-btn {
+                    font-size: 13px; /* Achica la letra en teléfonos estrechos */
+                    }
+                .btn-content {
+                    gap: 5px; /* Reduce espacio entre el ícono del rayo y el texto */
+                    }
+                    .digital-time {
+                    font-size: 32px; /* Achica el reloj principal un poco para que quepa bien */
+                    }
+                }
+
+                .custom-back-btn {
+                    align-self: flex-start;
+                    padding: 10px 22px;
+                    background-color: #241c14; /* Color oscuro que combina con tu reloj */
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                    border-radius: 30px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    margin-bottom: 5px;
+                    transition: background 0.3s ease;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                }
+                .custom-back-btn:hover {
+                    background-color: #df8c18; /* Naranja Cervecerías Cusco al pasar el mouse */
+                }
+
+                .btn-export-pdf {
+                    background-color: #ffeaea;
+                    color: #d9383a !important;
+                    border: 1px solid #f5c2c2;
+                    font-size: 11px;
+                    font-weight: 800;
+                    padding: 3px 12px;
+                    border-radius: 12px;
+                    text-decoration: none !important;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    transition: all 0.2s ease;
+                    cursor: pointer;
+                }
+
+                .btn-export-pdf:hover {
+                    background-color: #d9383a;
+                    color: #ffffff !important;
+                    box-shadow: 0 2px 8px rgba(217, 56, 58, 0.3);
+                }
+
+                .header-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+            </style>
+
+            <div class="o_attendance_portal_wrap">
+                <div class="craft-container">
+                <a href="/my/home" class="custom-back-btn">
+                ← Volver al Menú Principal
+                     </a>    
+                    <!-- 1. Tarjeta Principal con Reloj -->
+                    <div class="craft-card">
+                        <div class="brand-badge">CERVECERÍAS CUSCO</div>
+                        <!-- Logo de la empresa -->
+                            <div class="my-3">
+                             <img src="/logo.png" alt="Logo Cervecerías Cusco" style="height: 130px; object-fit: contain;"/>
+                                </div>
+                        <div class="employee-name-box">
+                            <h2 class="employee-title"><t t-esc="employee.name"/></h2>
+                        </div>
+                        <p class="subtitle">Portal de Marcación Digital</p>
+
+                        <div class="craft-clock-box">
+                            <div class="digital-time" id="portal_digital_clock">--:--:--</div>
+                            <div class="digital-date" id="portal_digital_date">Cargando fecha...</div>
+                        </div>
+
+                        <div class="status-indicator-wrap">
+                            <t t-if="attendance_state == 'checked_in'">
+                                <span class="status-badge active-shift">
+                                    <span class="pulsing-dot green"></span>
+                                    En turno laboral
+                                </span>
+                            </t>
+                            <t t-else="">
+                                <span class="status-badge out-shift">
+                                    <span class="pulsing-dot gray"></span>
+                                    Fuera de turno
+                                </span>
+                            </t>
+                        </div>
+
+                        <button id="btn_toggle_attendance"
+                                t-att-data-state="attendance_state"
+                                t-attf-class="craft-cta-btn #{'checkout' if attendance_state == 'checked_in' else 'checkin'}"
+                                onclick="return confirmarMarcacion(event, this)">
+                            <div class="btn-content">
+                                <t t-if="attendance_state == 'checked_in'">
+                                    <span class="btn-icon">⏹</span>
+                                    <span class="btn-text">REGISTRAR SALIDA (CHECK-OUT)</span>
+                                </t>
+                                <t t-else="">
+                                    <span class="btn-icon">⚡</span>
+                                    <span class="btn-text">REGISTRAR INGRESO (CHECK-IN)</span>
+                                </t>
+                            </div>
+                        </button>
+<!-- Importamos la librería SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script type="text/javascript">
+    function confirmarMarcacion(event, btnElement) {
+        // 1. Si el botón ya tiene nuestra marca de "confirmado", dejamos que pase a Odoo
+        if (btnElement.classList.contains('accion-confirmada')) {
+            btnElement.classList.remove('accion-confirmada');
+            return true;
+        }
+
+        // 2. Detenemos la marcación instantánea de Odoo
+        event.stopImmediatePropagation();
+        event.preventDefault();
+
+        // 3. Preparamos los textos y colores según si entra o sale
+        var estadoActual = btnElement.getAttribute('data-state');
+        var esSalida = (estadoActual === 'checked_in');
+
+        var titulo = esSalida ? '¿Finalizar Turno?' : '¿Iniciar Turno?';
+        var texto = esSalida 
+            ? 'Estás a punto de registrar tu SALIDA. ¿Deseas continuar?' 
+            : 'Estás a punto de registrar tu ENTRADA. ¿Deseas continuar?';
+        var colorBoton = esSalida ? '#dc3545' : '#28a745'; // Rojo para salida, Verde para entrada
+
+        // 4. Mostramos el modal centrado y bonito
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: 'question', // Muestra un ícono de pregunta animado
+            showCancelButton: true,
+            confirmButtonColor: colorBoton,
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+            backdrop: `rgba(0,0,0,0.6)` // Fondo oscuro detrás del modal
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // 5. Si el usuario acepta, marcamos el botón y simulamos el clic
+                btnElement.classList.add('accion-confirmada');
+                btnElement.click();
+            }
+        });
+
+        return false;
+    }
+</script>
+                    </div>
+
+                    <!-- 2. Tarjeta de Métricas (Consumiendo tu Python) -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-val"><t t-esc="hours_today"/><small>hrs</small></div>
+                            <div class="metric-lbl">Horas Hoy</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-val"><t t-esc="hours_month"/><small>hrs</small></div>
+                            <div class="metric-lbl">Este Mes</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-val"><t t-esc="days_assisted"/></div>
+                            <div class="metric-lbl">Días Asistidos</div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Tarjeta de Historial (Consumiendo tu Python) -->
+                    <div class="history-card">
+                        <div class="history-header">
+                            <h3>Últimas Marcaciones</h3>
+                            <!-- Agrupamos el contador dinámico y el botón nuevo -->
+                            <div class="header-actions">
+                                <span class="badge-count"><t t-esc="len(records)"/> registros</span>
+                                
+                                <!-- NUEVO BOTÓN DE DESCARGA PDF -->
+                                <a href="/my/attendance/download_pdf" class="btn-export-pdf" title="Descargar en PDF">
+                                    <i class="fa fa-file-pdf-o"></i> PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="timeline-list">
+                            <t t-foreach="records" t-as="rec">
+                                <div t-attf-class="timeline-item #{'item-active' if rec['is_active'] else ''}">
+                                    <div class="timeline-date-col">
+                                        <span class="date-str"><t t-esc="rec['date']"/></span>
+                                        <span class="worked-hrs"><t t-esc="rec['worked_hours']"/> hrs</span>
+                                    </div>
+                                    <div class="timeline-times-col">
+                                        <div class="time-block in">
+                                            <span class="tag">ENTRADA</span>
+                                            <strong class="hour"><t t-esc="rec['check_in']"/></strong>
+                                        </div>
+                                        <div class="time-block out">
+                                            <span class="tag">SALIDA</span>
+                                            <strong t-attf-class="hour #{'active-text' if rec['is_active'] else ''}">
+                                                <t t-esc="rec['check_out']"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="not records">
+                                <p class="text-center text-muted py-3">Sin marcaciones recientes registradas.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_no_employee" name="Sin Empleado">
+        <t t-call="portal.portal_layout">
+            <div class="container my-5 text-center">
+                <div class="alert alert-warning p-4 shadow-sm mx-auto" style="max-width: 500px; border-radius: 12px;">
+                    <h4 class="mb-2">Usuario sin ficha de personal</h4>
+                    <p class="mb-0 text-muted">Tu cuenta de usuario portal no tiene un empleado asignado en Recursos Humanos. Consulta con administración.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

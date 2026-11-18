@@ -1,0 +1,337 @@
+.o_attendance_portal_wrap {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #fcfaf5;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+
+    .craft-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .craft-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .brand-badge {
+        display: inline-block;
+        background: #fef3c7;
+        color: #d97706;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+
+    .employee-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 0.2rem;
+    }
+
+    .subtitle {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .craft-clock-box {
+        background: #1a1614;
+        border-radius: 20px;
+        padding: 2rem 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+
+        .digital-time {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #f59e0b;
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0px !important;
+            white-space: nowrap !important;
+        }
+
+        .digital-date {
+            color: #d6d3d1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    }
+
+    .status-indicator-wrap {
+        margin-bottom: 1.5rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 700;
+
+        &.out-shift {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        &.active-shift {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .pulsing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+
+            &.gray { background: #9ca3af; }
+            &.green { 
+                background: #10b981;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+                animation: pulse-green 2s infinite;
+            }
+        }
+    }
+
+    .craft-cta-btn {
+        width: 100%;
+        border: none;
+        border-radius: 16px;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-text {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        &.checkin {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+
+            &:hover {
+                background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(217, 119, 6, 0.35);
+            }
+        }
+
+        &.checkout {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+
+            &:hover {
+                background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(220, 38, 38, 0.35);
+            }
+        }
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 1.5rem;
+
+        .metric-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid #fef3c7;
+
+            .metric-val {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #d97706;
+
+                small {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #6b7280;
+                }
+            }
+
+            .metric-lbl {
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-top: 5px;
+            }
+        }
+    }
+
+    .history-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+
+            h3 {
+                font-size: 1.1rem;
+                font-weight: 800;
+                color: #1f2937;
+                margin: 0;
+            }
+
+            .badge-count {
+                background: #fef3c7;
+                color: #d97706;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                font-weight: 700;
+            }
+        }
+
+        .timeline-list {
+            .timeline-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #f3f4f6;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .timeline-date-col {
+                    display: flex;
+                    flex-direction: column;
+
+                    .date-str {
+                        font-weight: 800;
+                        color: #374151;
+                        font-size: 0.9rem;
+                    }
+
+                    .worked-hrs {
+                        font-size: 0.8rem;
+                        color: #6b7280;
+                        font-weight: 500;
+                    }
+                }
+
+                .timeline-times-col {
+                    display: flex;
+                    gap: 15px;
+                    text-align: right;
+
+                    .time-block {
+                        display: flex;
+                        flex-direction: column;
+
+                        .tag {
+                            font-size: 0.65rem;
+                            font-weight: 700;
+                            color: #9ca3af;
+                            letter-spacing: 0.5px;
+                        }
+
+                        .hour {
+                            font-weight: 700;
+                            font-size: 0.9rem;
+                            color: #4b5563;
+
+                            &.active-text {
+                                color: #10b981;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* REGLAS PARA PANTALLAS MÓVILES */
+    @media (max-width: 768px) {
+        padding: 1rem 0.5rem;
+
+        .craft-card {
+            padding: 1.25rem 0.75rem;
+        }
+
+        .craft-clock-box {
+            padding: 1.5rem 0.5rem;
+
+            .digital-time {
+                font-size: 1.55rem !important;
+                letter-spacing: -0.5px !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        .craft-cta-btn {
+            padding: 12px 10px !important;
+            
+            .btn-text {
+                font-size: 13px !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        .metrics-grid {
+            gap: 8px !important;
+
+            .metric-card {
+                padding: 0.75rem 0.4rem;
+
+                .metric-val {
+                    font-size: 1.15rem !important;
+                }
+
+                .metric-lbl {
+                    font-size: 0.62rem;
+                }
+            }
+        }
+
+        .timeline-times-col {
+            gap: 8px !important;
+        }
+    }
+}

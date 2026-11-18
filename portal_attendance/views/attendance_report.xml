@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 0. Formato de Papel Personalizado -->
+    <record id="paperformat_attendance_custom" model="report.paperformat">
+        <field name="name">Formato Asistencia Sin Margen</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">15</field>
+        <field name="margin_right">15</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- 1. La Acción -->
+    <record id="action_report_attendance_custom" model="ir.actions.report">
+        <field name="name">Reporte de Asistencia Diario</field>
+        <field name="model">hr.attendance</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">portal_attendance.report_attendance_custom_template</field>
+        <field name="report_file">portal_attendance.report_attendance_custom_template</field>
+        <field name="paperformat_id" ref="portal_attendance.paperformat_attendance_custom"/>
+        <field name="binding_model_id" ref="hr_attendance.model_hr_attendance"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- 2. La Plantilla del PDF -->
+    <template id="report_attendance_custom_template">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                
+                <div class="page" style="font-family: Arial, sans-serif; color: #333;">
+                    
+                    <!-- Bloque Superior: Logo e Información -->
+                    <table style="width: 100%; margin-bottom: 25px;">
+                        <tr>
+                            <td style="width: 50%; vertical-align: middle; text-align: left;">
+                                <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" style="width: 220px; height: auto;" alt="Logo"/>
+                                <span t-else="" style="font-weight: bold; font-size: 24px;">Cervecerías Cusco</span>
+                            </td>
+                            <td style="width: 50%; vertical-align: top; text-align: left; font-size: 13px; color: #444; line-height: 1.6; padding-left: 20px;">
+                                <div>Cervecerias Cusco S.A</div>
+                                <div>CAR. CUSCO IZCUCHACA KM. 15 FND. LAS FUENTES</div>
+                                <div>Anta Cusco Perú</div>
+                                <div style="margin-top: 10px;">RUC: 20527294917</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Título (Línea roja cambiada por azul oscuro corporativo) -->
+                    <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #2c3e50;">
+                        <h2 style="color: #2c3e50; font-weight: bold; margin: 0;">Reporte de Asistencia</h2>
+                        <span style="color: #7f8c8d; font-size: 14px;">Cervecerías Cusco - Recursos Humanos</span>
+                    </div>
+                    
+                    <!-- Tabla con Bordes en todas las celdas -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #2c3e50; color: #ffffff;">
+                                <!-- Se eliminó el rojo y se agregó borde sólido oscuro a las cabeceras -->
+                                <th style="padding: 10px; text-align: left; border: 1px solid #1a252f;">Empleado</th>
+                                <th style="padding: 10px; text-align: left; border: 1px solid #1a252f;">Entrada</th>
+                                <th style="padding: 10px; text-align: left; border: 1px solid #1a252f;">Salida</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #1a252f;">Total Horas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="doc">
+                                <tr>
+                                    <!-- Se agregó un borde gris claro (dddddd) a cada celda de datos -->
+                                    <td style="padding: 10px; border: 1px solid #dddddd;"><span t-field="doc.employee_id.name"/></td>
+                                    <td style="padding: 10px; color: #555; border: 1px solid #dddddd;"><span t-field="doc.check_in"/></td>
+                                    <td style="padding: 10px; color: #555; border: 1px solid #dddddd;"><span t-field="doc.check_out"/></td>
+                                    <td style="padding: 10px; text-align: center; font-weight: bold; border: 1px solid #dddddd;">
+                                        <span t-esc="round(doc.worked_hours, 2)"/> hrs
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pie de Página -->
+                <div class="footer" style="font-family: Arial, sans-serif;">
+                    <div style="border-top: 1px solid #999; padding-top: 8px; font-size: 12px; color: #555; text-align: left;">
+                        Tel: 993026407 · www.cerveceriascusco.com · RUC: 20527294917
+                    </div>
+                </div>
+
+            </t>
+        </t>
+    </template>
+</odoo>
